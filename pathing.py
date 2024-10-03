@@ -29,8 +29,8 @@ def get_random_path(): #generates a path randomly from start to target and targe
 
     startNode = 0 #get start node (the first node in the graph)
     targetNode = global_game_data.target_node[graphIndex] #get target node
-    endNode = len(graph_data[graphIndex]) - 1 #get exit node (the last node in the graph)
-    
+    endNode = graph_data[graphIndex][len(graph_data[graphIndex]) - 1] #get exit node (the last node in the graph)
+    '''issues on above line for some reason'''
     #initialize the start node
     currentNode = startNode
     path = [currentNode]
@@ -82,6 +82,9 @@ def get_random_path(): #generates a path randomly from start to target and targe
 
 
 def get_dfs_path():
+    #i did this because i thought we were supposed to but on further reading we dont...
+    #but i dont want to completely start from scratch next time lol sorry about that
+    '''
     graphIndex = global_game_data.current_graph_index  # stores the graph index of the graph we are using
 
     startNode = 0  # start node is the first node
@@ -127,9 +130,13 @@ def get_dfs_path():
     path.reverse()  # reverse path to get it right
 
     return path
+    '''
 
 
 def get_bfs_path():
+    #i did this because i thought we were supposed to but on further reading we dont...
+    #but i dont want to completely start from scratch next time lol sorry about that
+    '''
     graphIndex = global_game_data.current_graph_index  # stores the graph index of the graph we are using
 
     startNode = 0  #start node is first node
@@ -174,6 +181,7 @@ def get_bfs_path():
     path.reverse()  #reverse path to get it right
 
     return path
+    '''
 
 
 def get_dijkstra_path():
