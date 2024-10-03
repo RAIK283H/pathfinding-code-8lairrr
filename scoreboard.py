@@ -112,7 +112,7 @@ class Scoreboard:
         for display_element, player_configuration_info in self.player_nodes_visited_display:
             for player_object in global_game_data.player_objects:
                 if player_object.player_config_data == player_configuration_info:
-                    display_element.text = "Nodes Visited: " + str(len(player_object.visited_nodes))
+                    display_element.text = "Nodes Visited: " + str(player_object.nodes_visited)
 
     def update_scoreboard(self):
         self.update_elements_locations()

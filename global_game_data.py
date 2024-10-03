@@ -3,3 +3,4 @@ current_player_index = 0
 player_objects = []
 graph_paths = []
 target_node = []
+nodesVisited = 0

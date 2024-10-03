@@ -24,33 +24,37 @@ def get_test_path():
     return graph_data.test_path[global_game_data.current_graph_index]
 
 
+'''
+error: hangs at graph 3
+'''
 def get_random_path(): #generates a path randomly from start to target and target to end
     graphIndex = global_game_data.current_graph_index #stores index for the graph we are accessing
+    graphStuff = graph_data.graph_data #the list of graphs
 
-    startNode = 0 #get start node (the first node in the graph)
-    targetNode = global_game_data.target_node[graphIndex] #get target node
-    endNode = graph_data[graphIndex][len(graph_data[graphIndex]) - 1] #get exit node (the last node in the graph)
-    '''issues on above line for some reason'''
+    startNodeIndex = 0 #get start node (the first index in the graph)
+    targetNodeIndex = global_game_data.target_node[graphIndex] #get target node index
+    endNodeIndex = len(graphStuff[graphIndex]) - 1 #get exit node (the last index in the graph)
+
     #initialize the start node
-    currentNode = startNode
-    path = [currentNode]
+    currentNodeIndex = startNodeIndex
+    path = [currentNodeIndex] #keeps track of each index visited
 
     #get current graph
-    graph = graph_data[graphIndex]
-    visited = {currentNode} #for visited neighbors
+    graph = graphStuff[graphIndex]
+    visited = {currentNodeIndex} #for visited neighbors
 
     #generating the random path
-    while currentNode != endNode:
-        if currentNode == targetNode:
-            newTarget = endNode #once target node is reached, then the new target is the end node
-        else:
-            newTarget = targetNode
+    while currentNodeIndex != endNodeIndex:
+        
+        if currentNodeIndex == targetNodeIndex:
+            targetNodeIndex = endNodeIndex #once target node is reached, then the new target is the end node
+        
         
         #get neighbors of the node we are on
-        neighbors = graph[currentNode][1]
+        neighbors = list(graph[currentNodeIndex][1])
 
         #checking that there are no neighbors before proceeding
-        assert len(neighbors) > 0, "node {} has no neighbors".format(currentNode)
+        assert len(neighbors) > 0, "node {} has no neighbors".format(currentNodeIndex)
         
         #creating frontier of unvisited neighbors
         frontier = [] #for unvisited neighbors
@@ -66,17 +70,18 @@ def get_random_path(): #generates a path randomly from start to target and targe
         assert len(frontier) > 0, "frontier is empty and shouldn't be"
         
         #choose a random neighbor to go to
-        nextNode = random.choice(frontier)
+        nextNodeIndex = int(random.choice(frontier))
         
         #update path and visited nodes
-        path.append(nextNode)
-        visited.add(nextNode)
+        path.append(nextNodeIndex)
+        visited.add(nextNodeIndex)
+        global_game_data.nodesVisited = global_game_data.nodesVisited + 1
         
         #move to the next node
-        currentNode = nextNode
+        currentNodeIndex = nextNodeIndex
     
     #checking that path doesn't end at a node it isn't supposed to
-    assert path[-1] == endNode, "path does not end at the correct exit node"
+    assert path[-1] == endNodeIndex, "path does not end at the correct exit node"
 
     return path
 
