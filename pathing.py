@@ -2,15 +2,6 @@ import graph_data
 import global_game_data
 from numpy import random
 
-'''
-from graph_data:
-graph_data[a] = gives you graph at index a
-graph_data[a][0] = start node of graph a
-graph_data[a][length-1] = exit node of graph a
-graph_data[a][b][0] = x-y coordinates as tuple of point b in graph a
-graph_data[a][b][1] = adjacency list of point b in graph a
-'''
-
 def set_current_graph_paths():
     global_game_data.graph_paths.clear()
     global_game_data.graph_paths.append(get_test_path())
@@ -23,10 +14,6 @@ def set_current_graph_paths():
 def get_test_path():
     return graph_data.test_path[global_game_data.current_graph_index]
 
-
-'''
-error: hangs at graph 3
-'''
 def get_random_path(): #generates a path randomly from start to target and target to end
     graphIndex = global_game_data.current_graph_index #stores index for the graph we are accessing
     graphStuff = graph_data.graph_data #the list of graphs
@@ -66,7 +53,7 @@ def get_random_path(): #generates a path randomly from start to target and targe
         # move to the next node
         currentNodeIndex = nextNodeIndex
 
-        # path from target to end
+    # path from target to end
     while currentNodeIndex != endNodeIndex:
         neighbors = list(graph[currentNodeIndex][1])
 
@@ -88,7 +75,7 @@ def get_random_path(): #generates a path randomly from start to target and targe
 
         # move to the next node
         currentNodeIndex = nextNodeIndex
-    
+
     #checking that path doesn't end at a node it isn't supposed to
     assert path[-1] == endNodeIndex, "path does not end at the correct exit node"
 
