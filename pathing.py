@@ -30,8 +30,11 @@ def get_random_path(): #generates a path randomly from start to target and targe
     graph = graphStuff[graphIndex]
     visited = {currentNodeIndex} #for visited neighbors
 
+    max_iterations = 1000
+    iterations = 0
+
     #generating the random path from start to target
-    while currentNodeIndex != targetNodeIndex:
+    while currentNodeIndex != targetNodeIndex and iterations < max_iterations:
         neighbors = list(graph[currentNodeIndex][1])
 
         # ensure the current node has neighbors
@@ -52,9 +55,15 @@ def get_random_path(): #generates a path randomly from start to target and targe
 
         # move to the next node
         currentNodeIndex = nextNodeIndex
+
+        iterations += 1 #avoiding infinite loop
+
+        if iterations >= max_iterations:
+            print("Max iterations reached while finding path to target.")
+            return path
 
     # path from target to end
-    while currentNodeIndex != endNodeIndex:
+    while currentNodeIndex != endNodeIndex and iterations < max_iterations:
         neighbors = list(graph[currentNodeIndex][1])
 
         # ensure the current node has neighbors
@@ -75,6 +84,12 @@ def get_random_path(): #generates a path randomly from start to target and targe
 
         # move to the next node
         currentNodeIndex = nextNodeIndex
+
+        iterations += 1 #infinite loop prevention
+
+        if iterations >= max_iterations:
+            print("Max iterations reached while finding path to end.")
+            return path
 
     #checking that path doesn't end at a node it isn't supposed to
     assert path[-1] == endNodeIndex, "path does not end at the correct exit node"
