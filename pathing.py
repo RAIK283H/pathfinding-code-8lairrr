@@ -43,153 +43,64 @@ def get_random_path(): #generates a path randomly from start to target and targe
     graph = graphStuff[graphIndex]
     visited = {currentNodeIndex} #for visited neighbors
 
-    #generating the random path
-    while currentNodeIndex != endNodeIndex:
-        
-        if currentNodeIndex ==  targetNodeIndex:
-            targetNodeIndex = endNodeIndex #once target node is reached, then the new target is the end node
-        
-        
-        #get neighbors of the node we are on
+    #generating the random path from start to target
+    while currentNodeIndex != targetNodeIndex:
         neighbors = list(graph[currentNodeIndex][1])
 
-        #checking that there are no neighbors before proceeding
-        assert len(neighbors) > 0, "node {} has no neighbors".format(currentNodeIndex)
-        
-        #creating frontier of unvisited neighbors
-        frontier = [] #for unvisited neighbors
-        for n in neighbors:
-            if n not in visited:  #check if the neighbor has not been visited yet
-                frontier.append(n) #appends to non-visited neigbors
-        
-        #break loop if no more neighbors to visit
-        if len(frontier) == 0:
-            for n in neighbors:
-                if n not in visited:  #check if the neighbor has not been visited yet
-                    if n != endNodeIndex:
-                        frontier.append(n) #appends to non-visited neigbors
+        # ensure the current node has neighbors
+        assert len(neighbors) > 0, f"Node {currentNodeIndex} has no neighbors!"
 
-        #checking that the frontier is not empty before proceeding
-        assert len(frontier) > 0, "frontier is empty and shouldn't be"
-        
-        #choose a random neighbor to go to
+        # create a list of unvisited neighbors
+        frontier = [n for n in neighbors if n not in visited]
+
+        # if no unvisited neighbors, fall back to any available neighbor
+        if len(frontier) == 0:
+            frontier = neighbors
+
+        # choose a random neighbor and update the path
         nextNodeIndex = int(random.choice(frontier))
-        
-        #update path and visited nodes
         path.append(nextNodeIndex)
         visited.add(nextNodeIndex)
-        global_game_data.nodesVisited = global_game_data.nodesVisited + 1
-        
-        #move to the next node
+        global_game_data.nodesVisited += 1
+
+        # move to the next node
+        currentNodeIndex = nextNodeIndex
+
+        # path from target to end
+    while currentNodeIndex != endNodeIndex:
+        neighbors = list(graph[currentNodeIndex][1])
+
+        # ensure the current node has neighbors
+        assert len(neighbors) > 0, f"Node {currentNodeIndex} has no neighbors!"
+
+        # create a list of unvisited neighbors
+        frontier = [n for n in neighbors if n not in visited]
+
+        # if no unvisited neighbors, fall back to any available neighbor
+        if len(frontier) == 0:
+            frontier = neighbors
+
+        # choose a random neighbor and update the path
+        nextNodeIndex = int(random.choice(frontier))
+        path.append(nextNodeIndex)
+        visited.add(nextNodeIndex)
+        global_game_data.nodesVisited += 1
+
+        # move to the next node
         currentNodeIndex = nextNodeIndex
     
     #checking that path doesn't end at a node it isn't supposed to
-    #assert path[-1] == endNodeIndex, "path does not end at the correct exit node"
+    assert path[-1] == endNodeIndex, "path does not end at the correct exit node"
 
     return path
 
 
 def get_dfs_path():
-    #i did this because i thought we were supposed to but on further reading we dont...
-    #but i dont want to completely start from scratch next time lol sorry about that
-    '''
-    graphIndex = global_game_data.current_graph_index  # stores the graph index of the graph we are using
-
-    startNode = 0  # start node is the first node
-    targetNode = global_game_data.target_node[graphIndex]  # getting target node
-    endNode = len(graph_data[graphIndex]) - 1  # exit node is the last node
-
-    # frontier as stack of neighbors
-    frontier = [startNode]  # use a list to simulate stack behavior
-    visited = {startNode}  # set to track visited nodes
-    parents = {startNode: None}  # map to track parents of the nodes
-
-    # the actual searching part
-    while frontier:
-        currentNode = frontier.pop()  # getting the next node in stack (LIFO)
-
-        # check if we've reached the target node
-        if currentNode == targetNode:
-            newTarget = endNode  # once target node is reached, then the new target is the end node
-        else:
-            newTarget = targetNode
-
-        # get neighbors of the current node
-        neighbors = graph_data[graphIndex][currentNode][1]
-
-        # go through the neighbors
-        for neighbor in neighbors:
-            if neighbor not in visited:
-                visited.add(neighbor)  # mark neighbor as visited
-                parents[neighbor] = currentNode  # set the parent
-                frontier.append(neighbor)  # add neighbor to the stack
-
-        # check if we've reached the end node
-        if currentNode == endNode:
-            break
-
-    # go back to find the path
-    path = []
-    current = endNode  # begin going back from end node
-    while current is not None:
-        path.append(current) 
-        current = parents[current]  # move to parent node
-
-    path.reverse()  # reverse path to get it right
-
-    return path
-    '''
+    return [1,2]
 
 
 def get_bfs_path():
-    #i did this because i thought we were supposed to but on further reading we dont...
-    #but i dont want to completely start from scratch next time lol sorry about that
-    '''
-    graphIndex = global_game_data.current_graph_index  # stores the graph index of the graph we are using
-
-    startNode = 0  #start node is first node
-    targetNode = global_game_data.target_node[graphIndex]  #getting target node
-    endNode = len(graph_data[graphIndex]) - 1  #exit node is last node
-    
-    #frontier as queue of neighbors
-    frontier = [startNode]  
-    visited = {startNode}  
-    parents = {startNode: None}  #map to track parents of the nodes
-
-    #the actual searching part
-    while frontier:
-        currentNode = frontier.pop(0)  #getting next node in queue (frontier)
-
-        #have we reached target node?
-        if currentNode == targetNode:
-            newTarget = endNode  #once target node is reached, then the new target is the end node
-        else:
-            newTarget = targetNode
-
-        #get neighbors of the current node
-        neighbors = graph_data[graphIndex][currentNode][1]
-
-        #go through the neighbors
-        for neighbor in neighbors:
-            if neighbor not in visited: 
-                visited.add(neighbor)  #mark neighbor as visited
-                parents[neighbor] = currentNode  #set the parent
-                frontier.append(neighbor)
-
-        if currentNode == endNode:
-            break
-
-    #go back to find the path
-    path = []
-    current = endNode  #begin going back from end node
-    while current is not None:
-        path.append(current) 
-        current = parents[current]  #move to parent node
-
-    path.reverse()  #reverse path to get it right
-
-    return path
-    '''
+    return [1,2]
 
 
 def get_dijkstra_path():
