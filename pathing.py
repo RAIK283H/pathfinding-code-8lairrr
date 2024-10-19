@@ -98,11 +98,176 @@ def get_random_path(): #generates a path randomly from start to target and targe
 
 
 def get_dfs_path():
-    return [1,2]
+    graphIndex = global_game_data.current_graph_index  # stores index for the graph we are accessing
+    graphStuff = graph_data.graph_data  # the list of graphs
+
+    startNodeIndex = 0  # get start node (the first index in the graph)
+    targetNodeIndex = global_game_data.target_node[graphIndex]  # get target node index
+    endNodeIndex = len(graphStuff[graphIndex]) - 1  # get exit node (the last index in the graph)
+
+    # initialize the start node
+    currentNodeIndex = startNodeIndex
+    path = []  # keeps track of the final path
+    visited = {currentNodeIndex}  # tracks visited nodes
+
+    # DFS data structures
+    stack = [currentNodeIndex]  # Stack for DFS, starting with the start node
+    parents = {currentNodeIndex: None}  # Parent mapping for backtracking
+
+    while stack:
+        currentNodeIndex = stack.pop()  # get the last node from the stack
+
+        # check if we reached the target node
+        if currentNodeIndex == targetNodeIndex:
+            break
+
+        # get neighbors
+        neighbors = graphStuff[graphIndex][currentNodeIndex][1]
+
+        for neighbor in neighbors:
+            if neighbor not in visited:
+                visited.add(neighbor)  # mark as visited
+                parents[neighbor] = currentNodeIndex  # track its parent
+                stack.append(neighbor)  # add to the stack
+
+    # backtrack to form first part of the path
+    path_to_target = []
+    currentNodeIndex = targetNodeIndex
+    while currentNodeIndex is not None:
+        path_to_target.append(currentNodeIndex)
+        currentNodeIndex = parents[currentNodeIndex]
+    path_to_target.reverse()  # reverse path
+
+    visited = {targetNodeIndex}  # reset visited set
+    stack = [targetNodeIndex]  # reset stack
+    parents = {targetNodeIndex: None}  # reset parents
+
+    # DFS for target to end
+    while stack:
+        currentNodeIndex = stack.pop()
+
+        # check if we've reached the end node
+        if currentNodeIndex == endNodeIndex:
+            break
+
+        # get neighbors
+        neighbors = graphStuff[graphIndex][currentNodeIndex][1]
+
+        for neighbor in neighbors:
+            if neighbor not in visited:
+                visited.add(neighbor)
+                parents[neighbor] = currentNodeIndex
+                stack.append(neighbor)
+
+    # backtrack to form the second part of the path
+    path_to_end = []
+    currentNodeIndex = endNodeIndex
+    while currentNodeIndex is not None:
+        path_to_end.append(currentNodeIndex)
+        currentNodeIndex = parents[currentNodeIndex]
+    path_to_end.reverse()
+
+    # combine both paths into path variable
+    path = path_to_target[:-1] + path_to_end  # exclude the duplicated target node
+
+    # post-conditions
+    assert path[-1] == endNodeIndex, "Path does not end at the correct exit node"
+    assert targetNodeIndex in path, "PResult path does not include the target node."
+
+    for index in range(len(path) - 1):  # checking that all nodes have paths to each other
+        nodeA = path[index]
+        nodeB = path[index + 1]
+        nodeA_neighbors = graphStuff[graphIndex][nodeA][1]  # get neighbors of nodeA
+        assert nodeB in nodeA_neighbors, f"No edge exists between {nodeA} and {nodeB}."
+
+    return path
 
 
 def get_bfs_path():
-    return [1,2]
+    graphIndex = global_game_data.current_graph_index  # stores index for the graph we are accessing
+    graphStuff = graph_data.graph_data  # the list of graphs
+
+    startNodeIndex = 0  # get start node (the first index in the graph)
+    targetNodeIndex = global_game_data.target_node[graphIndex]  # get target node index
+    endNodeIndex = len(graphStuff[graphIndex]) - 1  # get exit node (the last index in the graph)
+
+    # initialize start node
+    currentNodeIndex = startNodeIndex
+    path = []  # keeps track of the final path
+    visited = {currentNodeIndex}  # tracks visited nodes
+
+    # for BFS data structures
+    frontier = [currentNodeIndex]  # queue
+    parents = {currentNodeIndex: None}  # parent mapping for back tracking
+
+    # path from start to target
+    while frontier:
+        currentNodeIndex = frontier.pop(0)  # get next node from the queue
+
+        # check if we've reached the target node
+        if currentNodeIndex == targetNodeIndex:
+            break
+
+        # get the neighbors of the current node
+        neighbors = graphStuff[graphIndex][currentNodeIndex][1]
+
+        for neighbor in neighbors:
+            if neighbor not in visited:
+                visited.add(neighbor)  # mark as visited
+                parents[neighbor] = currentNodeIndex  # track its parent
+                frontier.append(neighbor)  # add the neighbor to the frontier queue
+
+    # backtrack from target to start to form the path
+    path_to_target = []
+    currentNodeIndex = targetNodeIndex
+    while currentNodeIndex is not None:
+        path_to_target.append(currentNodeIndex)
+        currentNodeIndex = parents[currentNodeIndex]
+    path_to_target.reverse()  # reverse the path
+
+    # path from target to end
+    visited = {targetNodeIndex}  # reset visited set
+    frontier = [targetNodeIndex]  # reset frontier
+    parents = {targetNodeIndex: None}  # reset parents
+
+    while frontier:
+        currentNodeIndex = frontier.pop(0)
+
+        # check if we've reached the end node
+        if currentNodeIndex == endNodeIndex:
+            break
+
+        # get neighbors
+        neighbors = graphStuff[graphIndex][currentNodeIndex][1]
+
+        for neighbor in neighbors:
+            if neighbor not in visited:
+                visited.add(neighbor)
+                parents[neighbor] = currentNodeIndex
+                frontier.append(neighbor)
+
+    # backtrack from end to target to get second part of path
+    path_to_end = []
+    currentNodeIndex = endNodeIndex
+    while currentNodeIndex is not None:
+        path_to_end.append(currentNodeIndex)
+        currentNodeIndex = parents[currentNodeIndex]
+    path_to_end.reverse()
+
+    # combine the two paths into path variable
+    path = path_to_target[:-1] + path_to_end  # exclude the duplicated target node
+
+    # post-conditions
+    assert path[-1] == endNodeIndex, "Path does not end at the correct exit node"
+    assert targetNodeIndex in path, "PResult path does not include the target node."
+
+    for index in range(len(path) - 1): #checking that all nodes have paths to each other
+        nodeA = path[index]
+        nodeB = path[index + 1]
+        nodeA_neighbors = graphStuff[graphIndex][nodeA][1]  # get neighbors of nodeA
+        assert nodeB in nodeA_neighbors, f"No edge exists between {nodeA} and {nodeB}."
+
+    return path
 
 
 def get_dijkstra_path():
