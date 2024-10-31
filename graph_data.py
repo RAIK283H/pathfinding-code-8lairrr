@@ -181,7 +181,8 @@ test_path = [
     [0, 1, 2, 3, 4, 9]
 ]
 
-#hamiltonian_graph[b][0] = x-y coordinates as tuple of point b in graph a
+#hamiltonian_graph[b][0] = x-y coordinates as tuple of point b
+#hamiltonian_grap[b][1] = adjacency list of point b
 hamiltonian_graph = [
     [(0, 0), [1, 5]],
     [(1, 2), [0, 2]],

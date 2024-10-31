@@ -1,15 +1,21 @@
-import global_game_data
-import graph_data
 import permutation
+from graph_data import hamiltonian_graph
+
 
 def main():
-    graphIndex = global_game_data.current_graph_index
-    graphStuff = graph_data.graph_data
-    currentGraph = graphStuff[graphIndex]
+    #SJT permutations
+    permutations = permutation.find_permutations(hamiltonian_graph)
 
-    #prints if there is a hamiltonian graph in the permutations
-    #bonus: print optimal graph
-    #bonus 2: print largest set of nodes that is a complete graph
+    #find hamiltonian cycle
+    has_hamiltonian_cycle = permutation.validate_hamiltonian_cycle(hamiltonian_graph, permutations)
+
+    if has_hamiltonian_cycle:
+        print("A Hamiltonian cycle was found in the graph.")
+    else:
+        print("No Hamiltonian cycle exists in the graph.")
 
 if __name__ == "__main__":
     main()
+
+#bonus: print optimal graph
+#bonus 2: print largest set of nodes that is a complete graph
