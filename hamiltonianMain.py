@@ -7,14 +7,15 @@ def main():
     graphStuff = graph_data.graph_data
     currentGraph = graphStuff[graphIndex]
 
-    all_cycles = find_permutations(currentGraph) #finding all permutations
+    all_cycles = find_permutations(currentGraph)  # finding all permutations
 
-    valid_hamiltonian_cycles = hamiltonian_cycle(currentGraph, all_cycles) #finding hamiltonian cycles
+    hamiltonian_graph = graph_data.hamiltonian_graph
+    valid_hamiltonian_cycles = hamiltonian_cycle(hamiltonian_graph)
 
-    if valid_hamiltonian_cycles == -1 or not valid_hamiltonian_cycles: #if there are no hamiltonian cycles
-        print("no valid hamiltonian cycles found!")
+    if valid_hamiltonian_cycles == -1 or not valid_hamiltonian_cycles:
+        print(f"Hamiltonian graph: no valid Hamiltonian cycles found!")
     else:
-        print("valid hamiltonian cycles:")
+        print(f"Hamiltonian graph: valid Hamiltonian cycles:")
         for cycle in valid_hamiltonian_cycles:
             print(cycle)
 
