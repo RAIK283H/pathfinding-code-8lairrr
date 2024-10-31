@@ -1,4 +1,7 @@
 #finds all permutations (steps) of the graph given using SJT
+import math
+
+
 def find_permutations(graph):
     #basically performing SJT and appending to an array
     n = len(graph) #number of nodes
@@ -74,15 +77,42 @@ def validate_hamiltonian_cycle(graph, permutations):
         #returns false if no hamiltonian cycle is found
     return False
 
-
 #bonus: indicate which hamiltonian cycles are optimal in terms of overall distance
-#def optimal_cycle(permutations):
-    #use hamiltonian_cycle on permutations
-    #cycle_weights = []
+def optimal_cycle(permutations, graph):
+    cycle_weights = []
+    optimal_distance = float('inf')  #starting with infinity as we want to minimize
+    optimal_permutation = None
 
-    #use xy coords of each thing -> graph_data[a][b][0] = x-y coordinates as tuple of point b in graph a
+    #iterate through each permutation
+    for perm in permutations:
+        total_distance = 0
 
-    #return the lowest num and its corresponding permutation (same array in both arrays)
+        #find total distance
+        for i in range(len(perm)):
+            current_node_index = perm[i]
+            next_node_index = perm[(i + 1) % len(perm)]  #complete the graph
+
+            #getting coordinates
+            current_coords = graph[current_node_index][0]
+            next_coords = graph[next_node_index][0]
+
+            #get euclidean distance
+            distance = math.sqrt((next_coords[0] - current_coords[0]) ** 2 +
+                                 (next_coords[1] - current_coords[1]) ** 2)
+            total_distance += distance
+
+        #store it if its less than what we already have
+        cycle_weights.append(total_distance)
+
+    if cycle_weights:
+        min_index = cycle_weights.index(min(cycle_weights))
+        optimal_distance = cycle_weights[min_index]
+        optimal_permutation = permutations[min_index]
+    else:
+        optimal_distance = float('inf')
+        optimal_permutation = None
+
+    return optimal_distance, optimal_permutation
 
 #bonus 2: indicate the largest "clique" aka a subset of nodes representing a complete graph (all nodes are connected to each other)
 #use career fair lab !

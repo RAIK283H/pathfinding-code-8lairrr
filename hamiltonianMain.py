@@ -1,5 +1,6 @@
 import permutation
 from graph_data import hamiltonian_graph
+from permutation import optimal_cycle
 
 
 def main():
@@ -13,6 +14,10 @@ def main():
         print("A Hamiltonian cycle was found in the graph.")
     else:
         print("No Hamiltonian cycle exists in the graph.")
+
+    optimal_distance, optimal_permutation = permutation.optimal_cycle(permutations, hamiltonian_graph)
+    print(f"The optimal cycle distance is: {optimal_distance}")
+    print(f"The optimal cycle is: {optimal_permutation}")
 
 if __name__ == "__main__":
     main()
