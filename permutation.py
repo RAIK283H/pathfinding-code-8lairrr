@@ -53,6 +53,8 @@ def find_permutations(graph):
 
 #is there a hamiltonian graph in the permutations param?
 def validate_hamiltonian_cycle(graph, permutations):
+    isFound = False
+    hamiltonian_cycles = []
     for perm in permutations:
         is_cycle = True
 
@@ -66,16 +68,13 @@ def validate_hamiltonian_cycle(graph, permutations):
                 is_cycle = False
                 break
 
-        #does the last node connect back to the start node?
-        if is_cycle and perm[-1] not in graph[perm[0]][1]:
-            is_cycle = False
-
         #returns true if a hamiltonian cycle is found
-        if is_cycle:
-            return True
+        if is_cycle: #this loop is not being entered!!!
+            isFound = True
+            hamiltonian_cycles.append(perm)
 
         #returns false if no hamiltonian cycle is found
-    return False
+    return isFound, hamiltonian_cycles
 
 #bonus: indicate which hamiltonian cycles are optimal in terms of overall distance
 def optimal_cycle(permutations, graph):

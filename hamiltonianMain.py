@@ -1,25 +1,29 @@
 import permutation
-from graph_data import hamiltonian_graph
+import graph_data
 
 
 def main():
+    current_graph = graph_data.graph_data[2]
+
     #SJT permutations
-    permutations = permutation.find_permutations(hamiltonian_graph)
+    permutations = permutation.find_permutations(current_graph)
 
     #find hamiltonian cycle
-    has_hamiltonian_cycle = permutation.validate_hamiltonian_cycle(hamiltonian_graph, permutations)
+    has_hamiltonian_cycle, hamiltonian_cycles = permutation.validate_hamiltonian_cycle(current_graph, permutations)
 
     if has_hamiltonian_cycle:
-        print("A Hamiltonian cycle was found in the graph.")
+        print("Hamiltonian cycles found in the graph:")
+        for cycle in hamiltonian_cycles:
+            print(cycle)
     else:
         print("No Hamiltonian cycle exists in the graph.")
 
-    optimal_distance, optimal_permutation = permutation.optimal_cycle(permutations, hamiltonian_graph)
+    optimal_distance, optimal_permutation = permutation.optimal_cycle(permutations, current_graph)
     print(f"The optimal cycle distance is: {optimal_distance}")
     print(f"The optimal cycle is: {optimal_permutation}")
 
     #finding largest clique
-    clique = permutation.largest_clique(hamiltonian_graph)
+    clique = permutation.largest_clique(current_graph)
 
     if clique:
         print("The largest clique found in the graph is:", clique)
