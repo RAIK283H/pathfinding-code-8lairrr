@@ -115,7 +115,30 @@ def optimal_cycle(permutations, graph):
     return optimal_distance, optimal_permutation
 
 #bonus 2: indicate the largest "clique" aka a subset of nodes representing a complete graph (all nodes are connected to each other)
-#use career fair lab !
-#def largest_clique():
+def largest_clique(graph):
     #generates subsets instead of permutations
     #return largest set of nodes that is a complete graph
+    n = len(graph)  #number of nodes
+    largest_clique_set = []
+
+    #is subset complete graph?
+    def is_complete_graph(nodes):
+        for i in range(len(nodes)):
+            for j in range(i + 1, len(nodes)):
+                if nodes[j] not in graph[nodes[i]][1]:
+                    return False
+        return True
+
+    def generate_subsets(current_set, index):
+        if index == n:
+            #check for complete graph
+            if is_complete_graph(current_set) and len(current_set) > len(largest_clique_set):
+                largest_clique_set[:] = current_set
+            return
+
+        generate_subsets(current_set + [index], index + 1)
+        generate_subsets(current_set, index + 1)
+
+    generate_subsets([], 0)
+
+    return largest_clique_set

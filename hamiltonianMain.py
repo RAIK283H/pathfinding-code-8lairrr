@@ -1,6 +1,5 @@
 import permutation
 from graph_data import hamiltonian_graph
-from permutation import optimal_cycle
 
 
 def main():
@@ -19,8 +18,13 @@ def main():
     print(f"The optimal cycle distance is: {optimal_distance}")
     print(f"The optimal cycle is: {optimal_permutation}")
 
+    #finding largest clique
+    clique = permutation.largest_clique(hamiltonian_graph)
+
+    if clique:
+        print("The largest clique found in the graph is:", clique)
+    else:
+        print("No clique found in the graph.")
+
 if __name__ == "__main__":
     main()
-
-#bonus: print optimal graph
-#bonus 2: print largest set of nodes that is a complete graph
