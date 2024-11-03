@@ -3,10 +3,11 @@ import graph_data
 
 
 def main():
-    current_graph = graph_data.graph_data[2]
+    current_graph = graph_data.hamiltonian_graph #graph_data.graph_data[2]
 
     #SJT permutations
     permutations = permutation.find_permutations(current_graph)
+    print(permutations)
 
     #find hamiltonian cycle
     has_hamiltonian_cycle, hamiltonian_cycles = permutation.validate_hamiltonian_cycle(current_graph, permutations)

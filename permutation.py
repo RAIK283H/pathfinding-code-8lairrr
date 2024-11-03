@@ -8,19 +8,20 @@ def find_permutations(graph):
 
     permutation = list(range(n))  #first permutation
     permutations = []
+    directions = [1] * n  # all elements start by moving right
 
     #check if the element can move in the direction it points at
     def can_move(index):
-        if permutation[index] > 0:  #moving right if its positive
-            return index + 1 < n and permutation[index + 1] > permutation[index]
-        else:  #moving left if its negative
-            return index - 1 >= 0 and permutation[index - 1] > permutation[index]
+        if directions[index] == 1:  # moving right
+            return index + 1 < n and permutation[index] < permutation[index + 1]
+        else:  # moving left
+            return index - 1 >= 0 and permutation[index] < permutation[index - 1]
 
-    #move the element in the direction it points at
+    # Move the element in the direction it points at
     def move(index):
-        if permutation[index] > 0:  #moving right if its positive
+        if directions[index] == 1:  # moving right
             permutation[index], permutation[index + 1] = permutation[index + 1], permutation[index]
-        else:  #moving left if its negative
+        else:  # moving left
             permutation[index], permutation[index - 1] = permutation[index - 1], permutation[index]
 
     permutations.append(permutation[:])
@@ -44,9 +45,9 @@ def find_permutations(graph):
         #change direction of elements larger than the largest mobile element
         for i in range(n):
             if permutation[i] > largest_mobile_value:
-                permutation[i] = -permutation[i]
+                directions[i] = -directions[i]
 
-        #add permutation to the list
+        #add permutation to list
         permutations.append(permutation[:])
 
     return permutations
@@ -55,25 +56,25 @@ def find_permutations(graph):
 def validate_hamiltonian_cycle(graph, permutations):
     isFound = False
     hamiltonian_cycles = []
-    for perm in permutations:
+
+    unique_permutations = set(tuple(perm) for perm in permutations) #removes duplicate permutations
+
+    for perm in unique_permutations:
         is_cycle = True
+        positive_perm = [abs(node) for node in perm]
 
-        #loops through each number in the permutation
         for i in range(len(perm) - 1):
-            current_node = perm[i]
-            next_node = perm[i + 1]
+            current_node = positive_perm[i]
+            next_node = positive_perm[i + 1]
 
-            #is the next node in the adjacency list of the current node?
             if next_node not in graph[current_node][1]:
                 is_cycle = False
-                break
 
-        #returns true if a hamiltonian cycle is found
-        if is_cycle: #this loop is not being entered!!!
+        if is_cycle:
             isFound = True
-            hamiltonian_cycles.append(perm)
+            hamiltonian_cycles.append(positive_perm)
 
-        #returns false if no hamiltonian cycle is found
+    #returns false if no hamiltonian cycle is found
     return isFound, hamiltonian_cycles
 
 #bonus: indicate which hamiltonian cycles are optimal in terms of overall distance
