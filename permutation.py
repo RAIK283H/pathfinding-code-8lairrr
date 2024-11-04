@@ -1,32 +1,35 @@
 #finds all permutations (steps) of the graph given using SJT
 import math
 
-
 def find_permutations(graph):
     #basically performing SJT and appending to an array
     n = len(graph) #number of nodes
 
     permutation = list(range(n))  #first permutation
     permutations = []
-    directions = [1] * n  # all elements start by moving right
+    directions = [-1] * n  # all elements start by moving right
+
+    has_mobile = True
 
     #check if the element can move in the direction it points at
     def can_move(index):
-        if directions[index] == 1:  # moving right
-            return index + 1 < n and permutation[index] < permutation[index + 1]
-        else:  # moving left
-            return index - 1 >= 0 and permutation[index] < permutation[index - 1]
+        if directions[index] == 1:  # pointing right
+            return index + 1 < n and permutation[index] > permutation[index + 1]
+        else:  # pointing left
+            return index - 1 >= 0 and permutation[index] > permutation[index - 1]
 
-    # Move the element in the direction it points at
+    #move the element in the direction it points at
     def move(index):
         if directions[index] == 1:  # moving right
             permutation[index], permutation[index + 1] = permutation[index + 1], permutation[index]
+            directions[index], directions[index + 1] = directions[index + 1], directions[index]
         else:  # moving left
             permutation[index], permutation[index - 1] = permutation[index - 1], permutation[index]
+            directions[index], directions[index - 1] = directions[index - 1], directions[index]
 
-    permutations.append(permutation[:])
+    permutations.append(permutation[:]) #appends first permutation (the default graph)
 
-    while True:
+    while has_mobile:
         #find the largest mobile integer
         largest_mobile_index = -1
         largest_mobile_value = -1
@@ -36,19 +39,19 @@ def find_permutations(graph):
                 largest_mobile_value = permutation[i]
                 largest_mobile_index = i
 
-        if largest_mobile_index == -1:
-            break  #no mobile element
-
         #move the largest mobile element
         move(largest_mobile_index)
 
         #change direction of elements larger than the largest mobile element
         for i in range(n):
             if permutation[i] > largest_mobile_value:
-                directions[i] = -directions[i]
+                directions[i] *= -1
 
         #add permutation to list
         permutations.append(permutation[:])
+
+        if largest_mobile_index == -1:
+            has_mobile = False
 
     return permutations
 
@@ -57,22 +60,20 @@ def validate_hamiltonian_cycle(graph, permutations):
     isFound = False
     hamiltonian_cycles = []
 
-    unique_permutations = set(tuple(perm) for perm in permutations) #removes duplicate permutations
-
-    for perm in unique_permutations:
+    for perm in permutations:
         is_cycle = True
-        positive_perm = [abs(node) for node in perm]
+        perm.append(perm[0])
 
         for i in range(len(perm) - 1):
-            current_node = positive_perm[i]
-            next_node = positive_perm[i + 1]
+            current_node = perm[i]
+            next_node = perm[i + 1]
 
             if next_node not in graph[current_node][1]:
-                is_cycle = False
+                is_cycle = False #this might have to be changed because it keeps getting reset to false
 
         if is_cycle:
             isFound = True
-            hamiltonian_cycles.append(positive_perm)
+            hamiltonian_cycles.append(perm)
 
     #returns false if no hamiltonian cycle is found
     return isFound, hamiltonian_cycles

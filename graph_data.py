@@ -195,12 +195,5 @@ hamiltonian_graph = [
 
 '''
 valid permutations for hamiltonian_graph:
-[0, 1, 2, 3, 4, 5]
-[0, 1, 2, 3, 5, 4]
-[0, 1, 2, 5, 3, 4]
-[0, 1, 3, 2, 4, 5]
-[0, 2, 1, 3, 4, 5]
-[0, 2, 1, 3, 5, 4]
-[1, 0, 2, 3, 4, 5]
-[1, 0, 2, 3, 5, 4]
+12 total, since its a circle
 '''
