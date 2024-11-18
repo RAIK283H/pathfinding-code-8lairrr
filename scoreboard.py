@@ -13,11 +13,12 @@ class Scoreboard:
     player_path_display = []
     player_nodes_visited_display = [] #my statistic yay
     winner_display = None #stores the winner
+    total_distances = []  # keeps track of total distance for each player
 
     def __init__(self, batch, group):
         self.batch = batch
         self.group = group
-        self.stat_height = 32
+        self.stat_height = 20
         self.stat_width = 400
         self.number_of_stats = 6
         self.base_height_offset = 20
@@ -102,20 +103,39 @@ class Scoreboard:
         self.distance_to_exit = math.sqrt(pow(start_x - end_x, 2) + pow(start_y - end_y, 2))
         self.distance_to_exit_label.text = 'Direct Distance To Exit : ' + "{0:.0f}".format(self.distance_to_exit)
 
+
     def wrap_text(self, input):
         wrapped_text = (input[:44] + ', ...]') if len(input) > 44 else input
         return wrapped_text
 
     def update_distance_traveled(self):
-        total_distances = [] #keeps track of total distance for each player
+        self.total_distances = []  #reset the total distances list
+        index = 0
 
         for display_element, player_configuration_info in self.player_traveled_display:
             for player_object in global_game_data.player_objects:
                 if player_object.player_config_data == player_configuration_info:
-                    display_element.text = "Distance Traveled: " + str(int(player_object.distance_traveled))
+                    path = global_game_data.graph_paths[index]
+                    graph = graph_data.graph_data[global_game_data.current_graph_index]
+                    distance_traveled = 0
 
-                    total_distance = player_object.distance_traveled + self.distance_to_exit
-                    total_distances.append(total_distance)
+                    if path and len(path) > 1:
+                        for i in range(len(path) - 1):
+                            node_a = graph[path[i]][0]  #coords of current node
+                            node_b = graph[path[i + 1]][0]  #coords of next node
+                            distance_traveled += math.sqrt(
+                                (node_a[0] - node_b[0]) ** 2 + (node_a[1] - node_b[1]) ** 2
+                            )
+
+                    # calculating total distance
+                    total_distance = distance_traveled + self.distance_to_exit
+                    self.total_distances.append(total_distance)
+
+                    #updating display
+                    player_object.distance_traveled = total_distance
+                    display_element.text = f"Distance Traveled: {int(distance_traveled)}"
+
+                    index += 1 #incrementing
 
         for display_element, player_configuration_info in self.player_excess_distance_display:
             for player_object in global_game_data.player_objects:
@@ -128,13 +148,21 @@ class Scoreboard:
                 if player_object.player_config_data == player_configuration_info:
                     display_element.text = "Nodes Visited: " + str(player_object.nodes_visited)
 
-        self.update_winner(total_distances)
+        self.update_winner(self.total_distances)
 
     def update_winner(self, total_distances):
-        min_distance = min(total_distances)
-        winner_index = total_distances.index(min_distance)
-        winner_name = config_data.player_data[winner_index][0]  # get the winner's name
-        self.winner_display.text = f"Winner: {winner_name} (Distance: {min_distance:.2f})"  # update winner display
+        if self.winner_display.text != "Winner: None": #if there is already a winner displayed, then dont reset the display
+            return
+
+        min_distance = math.inf
+        winner_index = None
+        for index in range(len(total_distances)):
+            if total_distances[index] < min_distance: #it is not entering in to the if statement again after the first iteration of the entire loop
+                min_distance = total_distances[index]
+                winner_index = index
+
+        winner_name = config_data.player_data[winner_index][0]  #get the winners name
+        self.winner_display.text = f"Winner: {winner_name} (Distance: {min_distance:.2f})"
 
     def update_scoreboard(self):
         self.update_elements_locations()

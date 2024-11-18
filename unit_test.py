@@ -46,7 +46,6 @@ class TestPathFinding(unittest.TestCase):
         self.assertFalse(has_hamiltonian_cycle, "Expected no Hamiltonian cycle, but one was found.")
 
 
-''' older tests
     def test_dfs_path_includes_target(self):
         path = get_dfs_path()
         targetNodeIndex = global_game_data.target_node[global_game_data.current_graph_index]
@@ -88,7 +87,6 @@ class TestPathFinding(unittest.TestCase):
             nodeB = path[i + 1]
             neighbors = graph[nodeA][1]  # Get neighbors of nodeA
             self.assertIn(nodeB, neighbors, f"BFS: No edge exists between {nodeA} and {nodeB}.")
-'''
 
 if __name__ == '__main__':
     unittest.main()

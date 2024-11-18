@@ -11,7 +11,6 @@ def set_current_graph_paths():
     global_game_data.graph_paths.append(get_bfs_path())
     global_game_data.graph_paths.append(get_dijkstra_path())
 
-
 def get_test_path():
     return graph_data.test_path[global_game_data.current_graph_index]
 
