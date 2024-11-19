@@ -1,4 +1,6 @@
 import heapq
+import math
+
 import graph_data
 import global_game_data
 from numpy import random
@@ -282,34 +284,36 @@ def get_dijkstra_path():
     global_game_data.distance_traveled = 0
     global_game_data.dijkstra_nodes_visited = 0
 
-    def dijkstra(start, goal):
-        pq = []  #priority queue to hold nodes and their cumulative distances
-        heapq.heappush(pq, (0, start))  # (distance, node)
-        distances = {node: float('inf') for node in range(len(graphStuff[graphIndex]))}
-        distances[start] = 0
+    def heuristic(node, goal): #for extra credit
+        node_coords = graphStuff[graphIndex][node][0]
+        goal_coords = graphStuff[graphIndex][goal][0]
+        return math.sqrt((node_coords[0] - goal_coords[0]) ** 2 + (node_coords[1] - goal_coords[1]) ** 2)
+
+    def a_star(start, goal): #for extra credit
+        pq = []  #priority queue
+        heapq.heappush(pq, (0, start))  #priority, node
+        g_scores = {node: float('inf') for node in range(len(graphStuff[graphIndex]))}
+        g_scores[start] = 0
         parents = {start: None}
 
         while pq:
-            current_distance, current_node = heapq.heappop(pq)
+            current_priority, current_node = heapq.heappop(pq)
             global_game_data.dijkstra_nodes_visited += 1
 
-            #stop if we reached the goal node
+            #stop if reached the goal
             if current_node == goal:
                 break
 
-            #if the distance is greater than the recorded shortest distance then skip
-            if current_distance > distances[current_node]:
-                continue
-
-            #exploring neighbors
+            #looking through neighbors
             for neighbor in graphStuff[graphIndex][current_node][1]:
-                distance = current_distance + 1
-                if distance < distances[neighbor]:
-                    distances[neighbor] = distance
+                tentative_g_score = g_scores[current_node] + 1  #assuming edge weight is 1
+                if tentative_g_score < g_scores[neighbor]:
+                    g_scores[neighbor] = tentative_g_score
+                    f_score = tentative_g_score + heuristic(neighbor, goal)
+                    heapq.heappush(pq, (f_score, neighbor))
                     parents[neighbor] = current_node
-                    heapq.heappush(pq, (distance, neighbor))
 
-        #backtrack
+        #backtracking to construct path
         path = []
         current_node = goal
         while current_node is not None:
@@ -321,8 +325,8 @@ def get_dijkstra_path():
         return path
 
     #getting paths from start to target and then target to end
-    path_to_target = dijkstra(startNodeIndex, targetNodeIndex)
-    path_to_end = dijkstra(targetNodeIndex, endNodeIndex)
+    path_to_target = a_star(startNodeIndex, targetNodeIndex)
+    path_to_end = a_star(targetNodeIndex, endNodeIndex)
 
     #combine the two paths and remove the duplicate target node
     full_path = path_to_target[:-1] + path_to_end
