@@ -156,9 +156,9 @@ class Scoreboard:
 
         min_distance = math.inf
         winner_index = None
-        for index in range(len(total_distances)):
-            if total_distances[index] < min_distance: #it is not entering in to the if statement again after the first iteration of the entire loop
-                min_distance = total_distances[index]
+        for index, distance in enumerate(total_distances):
+            if distance < min_distance:  #compare each distance
+                min_distance = distance
                 winner_index = index
 
         winner_name = config_data.player_data[winner_index][0]  #get the winners name
