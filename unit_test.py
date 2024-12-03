@@ -1,11 +1,14 @@
 import math
 import unittest
 
+from debugpy.common.timestamp import current
 from numpy.random import permutation
 
+import f_w
 import global_game_data
 import graph_data
 import pathing
+from f_w import floyd_warshall
 from pathing import get_dfs_path, get_bfs_path
 from permutation import find_permutations, validate_hamiltonian_cycle
 
@@ -109,6 +112,7 @@ class TestPathFinding(unittest.TestCase):
 
         self.assertFalse(has_hamiltonian_cycle, "Expected no Hamiltonian cycle, but one was found.")
 
+    '''
     def test_dijkstra_path_includes_target(self):
         path = pathing.get_dijkstra_path()
         target_node_index = global_game_data.target_node[global_game_data.current_graph_index]
@@ -118,6 +122,42 @@ class TestPathFinding(unittest.TestCase):
         path = pathing.get_dijkstra_path()
         shortest_path = [0, 1, 3]
         self.assertEqual(path, shortest_path, "Dijkstra path is not the shortest path.")
+    '''
+
+    def test_floyd_warshall_graph_0(self):
+        graph = graph_data.graph_data[0]
+        graph_matrix, parent_matrix = f_w.floyd_warshall(graph)
+        # For graph 0, all nodes are directly connected
+        expected_result = [
+            [0, 1, 2],  # Distances from Node 0
+            [1, 0, 1],  # Distances from Node 1
+            [2, 1, 0]  # Distances from Node 2
+        ]
+        self.assertEqual(graph_matrix, expected_result, "Floyd-Warshall result for Graph 0 is incorrect.")
+
+    def test_floyd_warshall_disconnected_graph(self):
+        current = graph_data.graph_data[1]
+        graph, parent = f_w.floyd_warshall(current)
+
+        expected = [
+            [0, 1, float('inf'), float('inf')],
+            [1, 0, float('inf'), float('inf')],
+            [float('inf'), float('inf'), 0, 2],
+            [float('inf'), float('inf'), 2, 0]
+        ]
+        self.assertEqual(graph, expected, "Floyd-Warshall result for Graph 1 is incorrect.")
+
+    def test_floyd_warshall_weighted_graph(self):
+        current = graph_data.graph_data[2]
+        graph, parent = f_w.floyd_warshall(current())
+
+        expected = [
+            [0, 4, 1, 6],
+            [4, 0, 5, 2],
+            [1, 5, 0, 3],
+            [6, 2, 3, 0]
+        ]
+        self.assertEqual(graph, expected, "Floyd-Warshall result for Graph 2 is incorrect.")
 
 if __name__ == '__main__':
     unittest.main()

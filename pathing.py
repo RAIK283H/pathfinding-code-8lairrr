@@ -1,9 +1,13 @@
 import heapq
 import math
+import f_w
 
 import graph_data
 import global_game_data
 from numpy import random
+
+from config_data import player_data
+
 
 def set_current_graph_paths():
     global_game_data.graph_paths.clear()
@@ -11,7 +15,16 @@ def set_current_graph_paths():
     global_game_data.graph_paths.append(get_random_path())
     global_game_data.graph_paths.append(get_dfs_path())
     global_game_data.graph_paths.append(get_bfs_path())
-    global_game_data.graph_paths.append(get_dijkstra_path())
+
+    if player_data[4][0] == "Floyd-Warshall":
+        #use floyd-warshall's algorithm to calculate paths
+        graph = graph_data[global_game_data.current_graph_index]
+        graph_matrix, parent_matrix = f_w.floyd_warshall(graph)
+        paths = f_w.floyd_warshall_paths(graph_matrix, parent_matrix)
+        global_game_data.graph_paths.append(paths)
+    else:
+        # default to dijkstra
+        global_game_data.graph_paths.append(get_dijkstra_path())
 
 def get_test_path():
     return graph_data.test_path[global_game_data.current_graph_index]

@@ -9,7 +9,7 @@ player_data = [
     ["Random", "2.png", colors.ORANGE],
     ["DFS", "3.png", colors.PURPLE],
     ["BFS", "4.png", colors.BLUE],
-    ["Dijkstra", "5.png", colors.GREEN]
+    ["Floyd-Warshall", "5.png", colors.GREEN] #updated from dijkstra!
 ]
 
 display_size_right = 400
