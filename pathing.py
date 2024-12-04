@@ -19,8 +19,9 @@ def set_current_graph_paths():
     if player_data[4][0] == "Floyd-Warshall":
         #use floyd-warshall's algorithm to calculate paths
         graph = graph_data.graph_data[global_game_data.current_graph_index]
-        graph_matrix, parent_matrix = f_w.floyd_warshall(graph)
-        paths = f_w.floyd_warshall_paths(graph_matrix, parent_matrix)
+
+        graph_matrix, parent_matrix = f_w.floyd_warshall(graph, graph)
+        paths = f_w.floyd_warshall_paths(graph_matrix)
         global_game_data.graph_paths.append(paths)
     else:
         # default to dijkstra

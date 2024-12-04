@@ -1,69 +1,71 @@
-import graph_data
-import global_game_data
+import math
 
 #transforms graph data to n * n matrix for input
-def graph_data_to_graph_matrix_matrix(graph):
-    n = len(graph) #number of nodes
-    graph_matrix = [[float('inf')] * n for _ in range(n)] #initialize n x n matrix with infinity as the values
+def array_to_matrix(vertexList):
+    vertices = len(vertexList)
+    matrix = [[0] * vertices for _ in range(vertices)]
 
-    for i, (_, adjacency_list) in enumerate(graph):
-        graph_matrix[i][i] = 0 #distance from a node to itself is 0
-        for neighbor in adjacency_list:
-            if isinstance(neighbor, tuple): #if it has a weight
-                graph_matrix[i][neighbor[0]] = neighbor[1]
-            else: #there is no weight
-                graph_matrix[i][neighbor] = 1
+    for vertexNumber, vertexInfo in enumerate(vertexList):
+        neighbors = vertexInfo[vertexNumber]
+        for neighbor in neighbors:
+            matrix[vertexNumber][neighbor] = 1
+    return matrix
 
-    return graph_matrix
+#finds shortest paths from floyd warshall matrices
+def floyd_warshall_paths(graph_matrix):
+    graph = array_to_matrix(graph_matrix)
+    distances, parents = floyd_warshall(graph, graph_matrix)
+    return clean_output(distances), clean_output(parents)
 
-#generates an n * n matrix of the parents of the graph_matrix matrix
-def generate_parent_matrix(graph_matrix):
-    n = len(graph_matrix) #number of nodes
-    parent_matrix = [[None] * n for _ in range(n)] #initialize n x n matrix with None as the values
+#removes "sys.maxsize" and replaces it with "no path" for sake of output
+def clean_output(matrix):
+    for i in range(len(matrix)):
+        for j in range(len(matrix[i])):
+            if matrix[i][j] >= math.inf:
+                matrix[i][j] = "no path"
 
-    for i in range(n):
-        for j in range(n):
-            if i != j and graph_matrix[i][j] != float('inf'):
-                parent_matrix[i][j] = i #the parent of j in the shortest path is i
-            else:
-                parent_matrix[i][j] = None  #no connection = no parent
+    return matrix
 
-    return parent_matrix
+#helps for the main to find winner
+def find_distance(nodeA, nodeB):
+    xA = nodeA[0][0]
+    yA = nodeA[0][1]
+    xB = nodeB[0][0]
+    yB = nodeB[0][1]
+    diffOfX = math.pow(xA-xB, 2)
+    diffOfY = math.pow(yA-yB, 2)
+
+    distance = math.sqrt(diffOfX + diffOfY)
+    return distance
 
 #performs floyd warshall algorithm and returns all-pairs shortest path
-def floyd_warshall(graph):
-    graph_matrix = graph_data_to_graph_matrix_matrix(graph) #graph_matrix is a weighted graph matrix
-    V = len(graph_matrix) #V is the number of nodes aka the height/weight of the graph_matrix matrix
-    parent_matrix = generate_parent_matrix(graph_matrix) #parent_matrix is the matrix that holds parents of the graph_matrix matrix
+def floyd_warshall(graph, nodes):
+    numOfVertices = len(graph)
+    distanceMatrix = [[math.inf] * numOfVertices for _ in range(numOfVertices)] #set all to big number (infinity)
+    parentMatrix = [[None] * numOfVertices for _ in range(numOfVertices)] #set parents to blank
 
-    for k in range(V):
-        for i in range(V):
-            for j in range(V):
-                if graph_matrix[i][k] + graph_matrix[k][j] < graph_matrix[i][j]:
-                    graph_matrix[i][j] = graph_matrix[i][k] + graph_matrix[k][j] #children matrix
-                    parent_matrix[i][j] = parent_matrix[k][j] #parent matrix is updated for new path
+    #put all vertices in distance matrix as 0 if it is pointing to itself
+    for vertex in range(numOfVertices):
+        distanceMatrix[vertex][vertex] = 0
 
-    return graph_matrix, parent_matrix #return updated matrices
+    #finding distance between nodes
+    for i in range(numOfVertices):
+        for j in range(numOfVertices):
+            if i < len(graph) and j < len(graph[i]):
+                if graph[i][j] == 1:
+                    distanceMatrix[i][j] = find_distance(nodes[i], nodes[j])
 
-#finds paths from floyd warshall matrices
-def floyd_warshall_paths(graph_matrix, parent_matrix):
-    V = len(graph_matrix) #number of vertices
-    all_paths = []
+    #updates distance matrix
+    for x in range(numOfVertices):
+        for y in range(numOfVertices):
+            for z in range(numOfVertices):
+                if distanceMatrix[y][z] > distanceMatrix[y][x] + distanceMatrix[x][z]:
+                    distanceMatrix[y][z] = distanceMatrix[y][x] + distanceMatrix[x][z]
+                    parentMatrix[y][z] = x
 
-    for i in range(V):
-        for j in range(V):
-            if graph_matrix[i][j] == float('inf'): #no path exists
-                all_paths.append((i, j, [])) #empty path for (i, j)
-            else: #reconstructing the path
-                path = []
-                current = i
-                visited = set()
-                while current is not None and current not in visited:
-                    visited.add(current)
-                    path.insert(0, current) #prepend node
-                    current = parent_matrix[i][current]
-                if current is not None:  #if a cycle is detected return an empty path
-                    path = []
-                all_paths.append((i, j, path)) #add the path for (i, j)
+    print("\n")
+    for row in parentMatrix:
+        print(row)
 
-    return all_paths
+    return distanceMatrix, parentMatrix
+
