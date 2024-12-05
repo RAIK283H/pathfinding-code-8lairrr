@@ -1,8 +1,5 @@
 import math
 
-from scipy.spatial import distance_matrix
-import graph_data
-
 #finds shortest paths from floyd warshall matrices
 def floyd_warshall_paths(distance_matrix, parent_matrix):
     for k in range(len(distance_matrix)):
@@ -46,7 +43,7 @@ def find_distance(nodeA, nodeB):
     return distance
 
 #builds matrices and performs floyd warshall algorithm. returns all-pairs shortest path.
-def floyd_warshall(graph, nodes):
+def floyd_warshall(graph, nodes, start, target, end):
     numOfVertices = len(graph)
     distanceMatrix = [[math.inf] * numOfVertices for _ in range(numOfVertices)] #set all to big number (infinity)
     parentMatrix = [[None] * numOfVertices for _ in range(numOfVertices)] #set parents to blank
@@ -64,5 +61,7 @@ def floyd_warshall(graph, nodes):
     for i in range(numOfVertices):
         parentMatrix[i][i] = i
 
-    paths = floyd_warshall_paths(distanceMatrix, parentMatrix)
+    floyd_warshall_paths(distanceMatrix, parentMatrix) #updating based on floyd warshall
+
+    paths = build_path(start, end, parentMatrix) #making da path
     return paths

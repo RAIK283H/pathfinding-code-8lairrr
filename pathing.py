@@ -7,6 +7,7 @@ import global_game_data
 from numpy import random
 
 from config_data import player_data
+from global_game_data import target_node
 
 
 def set_current_graph_paths():
@@ -19,9 +20,10 @@ def set_current_graph_paths():
     if player_data[4][0] == "Floyd-Warshall":
         #use floyd-warshall's algorithm to calculate paths
         graph = graph_data.graph_data[global_game_data.current_graph_index]
+        start_node = 0
+        end_node = len(graph) - 1
 
-        graph_matrix, parent_matrix = f_w.floyd_warshall(graph, graph)
-        paths = f_w.floyd_warshall_paths(graph_matrix)
+        paths = f_w.floyd_warshall(graph, graph, start_node, target_node, end_node)
         global_game_data.graph_paths.append(paths)
     else:
         # default to dijkstra
