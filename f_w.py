@@ -1,23 +1,30 @@
 import math
 
-#transforms graph data to n * n matrix for input
-def array_to_matrix(vertexList):
-    vertices = len(vertexList)
-    matrix = [[0] * vertices for _ in range(vertices)]
-
-    for vertexNumber, vertexInfo in enumerate(vertexList):
-        neighbors = vertexInfo[vertexNumber]
-        for neighbor in neighbors:
-            matrix[vertexNumber][neighbor] = 1
-    return matrix
+from scipy.spatial import distance_matrix
+import graph_data
 
 #finds shortest paths from floyd warshall matrices
-def floyd_warshall_paths(graph_matrix):
-    graph = array_to_matrix(graph_matrix)
-    distances, parents = floyd_warshall(graph, graph_matrix)
-    return clean_output(distances), clean_output(parents)
+def floyd_warshall_paths(distance_matrix, parent_matrix):
+    for k in range(len(distance_matrix)):
+        for i in range(len(distance_matrix)):
+            for j in range(len(distance_matrix)):
+                current_distance = distance_matrix[i][k] + distance_matrix[k][j]
+                if distance_matrix[i][j] > current_distance:
+                    distance_matrix[i][j] = current_distance
+                    parent_matrix[i][j] = parent_matrix[k][j]
 
-#removes "sys.maxsize" and replaces it with "no path" for sake of output
+#builds path from u (start node) to v (target node)
+def build_path(u, v, parent_matrix):
+    path = []
+    if parent_matrix[u][v] is None:
+        return path
+    path.insert(0, v)
+    while u != v:
+        v = parent_matrix[u][v]
+        path.insert(0, v)
+    return path
+
+#removes infinity and replaces it with "no path" for sake of output
 def clean_output(matrix):
     for i in range(len(matrix)):
         for j in range(len(matrix[i])):
@@ -28,44 +35,34 @@ def clean_output(matrix):
 
 #helps for the main to find winner
 def find_distance(nodeA, nodeB):
-    xA = nodeA[0][0]
-    yA = nodeA[0][1]
-    xB = nodeB[0][0]
-    yB = nodeB[0][1]
+    xA = nodeA[0]
+    yA = nodeA[1]
+    xB = nodeB[0]
+    yB = nodeB[1]
     diffOfX = math.pow(xA-xB, 2)
     diffOfY = math.pow(yA-yB, 2)
 
     distance = math.sqrt(diffOfX + diffOfY)
     return distance
 
-#performs floyd warshall algorithm and returns all-pairs shortest path
+#builds matrices and performs floyd warshall algorithm. returns all-pairs shortest path.
 def floyd_warshall(graph, nodes):
     numOfVertices = len(graph)
     distanceMatrix = [[math.inf] * numOfVertices for _ in range(numOfVertices)] #set all to big number (infinity)
     parentMatrix = [[None] * numOfVertices for _ in range(numOfVertices)] #set parents to blank
 
-    #put all vertices in distance matrix as 0 if it is pointing to itself
-    for vertex in range(numOfVertices):
-        distanceMatrix[vertex][vertex] = 0
-
     #finding distance between nodes
     for i in range(numOfVertices):
-        for j in range(numOfVertices):
-            if i < len(graph) and j < len(graph[i]):
-                if graph[i][j] == 1:
-                    distanceMatrix[i][j] = find_distance(nodes[i], nodes[j])
+        for j in graph[i][1]: #goes through adjacency list
+            if i == j: #put all vertices in distance matrix as 0 if it is pointing to itself
+                distanceMatrix[i][j] = 0
 
-    #updates distance matrix
-    for x in range(numOfVertices):
-        for y in range(numOfVertices):
-            for z in range(numOfVertices):
-                if distanceMatrix[y][z] > distanceMatrix[y][x] + distanceMatrix[x][z]:
-                    distanceMatrix[y][z] = distanceMatrix[y][x] + distanceMatrix[x][z]
-                    parentMatrix[y][z] = x
+            else:
+                distanceMatrix[i][j] = find_distance(nodes[i][0], nodes[j][0])
+                parentMatrix[i][j] = i
 
-    print("\n")
-    for row in parentMatrix:
-        print(row)
+    for i in range(numOfVertices):
+        parentMatrix[i][i] = i
 
-    return distanceMatrix, parentMatrix
-
+    paths = floyd_warshall_paths(distanceMatrix, parentMatrix)
+    return paths
