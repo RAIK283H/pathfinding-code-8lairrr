@@ -125,19 +125,25 @@ class TestPathFinding(unittest.TestCase):
     '''
 
     def test_floyd_warshall_graph_0(self):
-        graph = graph_data.graph_data[0]
-        graph_matrix, parent_matrix = f_w.floyd_warshall(graph)
+        graph = graph_data.graph_data[0]  # Example graph 0
+        start = 0
+        target = global_game_data.target_node[0]
+        end = len(graph) - 1
+        graph_matrix, parent_matrix = f_w.floyd_warshall(graph, graph, start, target, end)
         # For graph 0, all nodes are directly connected
         expected_result = [
             [0, 1, 2],  # Distances from Node 0
             [1, 0, 1],  # Distances from Node 1
-            [2, 1, 0]  # Distances from Node 2
+            [2, 1, 0]   # Distances from Node 2
         ]
-        self.assertEqual(graph_matrix, expected_result, "Floyd-Warshall result for Graph 0 is incorrect.")
+        self.assertEqual(graph_matrix, expected_result, "Floyd-Warshall result for Graph 0 is incorrect")
 
     def test_floyd_warshall_disconnected_graph(self):
-        current = graph_data.graph_data[1]
-        graph, parent = f_w.floyd_warshall(current)
+        graph = graph_data.graph_data[1]  # Example graph 0
+        start = 0
+        target = global_game_data.target_node[0]
+        end = len(graph) - 1
+        graph_matrix, parent_matrix = f_w.floyd_warshall(graph, graph, start, target, end)
 
         expected = [
             [0, 1, float('inf'), float('inf')],
@@ -145,11 +151,14 @@ class TestPathFinding(unittest.TestCase):
             [float('inf'), float('inf'), 0, 2],
             [float('inf'), float('inf'), 2, 0]
         ]
-        self.assertEqual(graph, expected, "Floyd-Warshall result for Graph 1 is incorrect.")
+        self.assertEqual(graph_matrix, expected, "Floyd-Warshall result for Graph 1 is incorrect.")
 
     def test_floyd_warshall_weighted_graph(self):
-        current = graph_data.graph_data[2]
-        graph, parent = f_w.floyd_warshall(current())
+        graph = graph_data.graph_data[2]
+        start = 0
+        target = global_game_data.target_node[0]
+        end = len(graph) - 1
+        graph_matrix, parent_matrix = f_w.floyd_warshall(graph, graph, start, target, end)
 
         expected = [
             [0, 4, 1, 6],
@@ -157,7 +166,7 @@ class TestPathFinding(unittest.TestCase):
             [1, 5, 0, 3],
             [6, 2, 3, 0]
         ]
-        self.assertEqual(graph, expected, "Floyd-Warshall result for Graph 2 is incorrect.")
+        self.assertEqual(graph_matrix, expected, "Floyd-Warshall result for Graph 2 is incorrect.")
 
 if __name__ == '__main__':
     unittest.main()
